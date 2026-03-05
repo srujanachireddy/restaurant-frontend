@@ -22,6 +22,7 @@ pipeline {
                 sh '''
                     node --version
                     npm --version
+                    node -e "const v = process.versions.node.split('.')[0]; if(v < 20) { console.error('Node 20+ required, got ' + v); process.exit(1); }"
                 '''
             }
         }
