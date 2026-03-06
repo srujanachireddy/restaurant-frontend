@@ -41,16 +41,17 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
-                echo '🔨 Building for production...'
-                sh '''
-                    echo "VITE_AUTH_API_URL=$VITE_AUTH_API_URL"   > .env
-                    echo "VITE_MENU_API_URL=$VITE_MENU_API_URL"   >> .env
-                    echo "VITE_ORDER_API_URL=$VITE_ORDER_API_URL" >> .env
-                    npm run build
-                '''
-            }
+        steps {
+            echo '🔨 Building for production...'
+            sh '''#!/bin/bash
+            echo "VITE_AUTH_API_URL=${VITE_AUTH_API_URL}"   > .env
+            echo "VITE_MENU_API_URL=${VITE_MENU_API_URL}"   >> .env
+            echo "VITE_ORDER_API_URL=${VITE_ORDER_API_URL}" >> .env
+            cat .env
+            npm run build
+            '''
         }
+}
 
         stage('Deploy') {
             steps {
