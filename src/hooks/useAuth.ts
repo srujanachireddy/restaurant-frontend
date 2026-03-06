@@ -25,6 +25,9 @@ export const useLogin = () => {
       } else {
         navigate("/menu");
       }
+      console.log("Full login response:", JSON.stringify(data));
+      console.log("Role value:", data.role);
+      console.log("Role type:", typeof data.role);
     },
     onError: (err: string) => toast.error(err || "Invalid email or password"),
   });
