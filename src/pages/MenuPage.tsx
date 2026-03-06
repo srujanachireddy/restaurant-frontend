@@ -3,28 +3,41 @@ import { MenuCard } from "@/components/features/menu/MenuCard";
 import { CategoryFilter } from "@/components/features/menu/CategoryFilter";
 import { MenuItemModal } from "@/components/features/menu/MenuItemModal";
 import { MenuCardSkeleton } from "@/components/ui/Skeleton";
-import { useAvailableMenu } from "@/hooks/useMenu";
+import { useAvailableMenu, useMenuByCategory } from "@/hooks/useMenu";
 
 export const MenuPage = () => {
-  const { data: items = [], isLoading } = useAvailableMenu();
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
+  // always fetch all available items for category list + search
+  const { data: allItems = [], isLoading: allLoading } = useAvailableMenu();
+
+  // fetch by category when a category is selected
+  const { data: categoryItems = [], isLoading: categoryLoading } =
+    useMenuByCategory(category);
+
+  // use server filtered items when category selected, otherwise all items
+  const baseItems = category === "all" ? allItems : categoryItems;
+  const isLoading = category === "all" ? allLoading : categoryLoading;
+
+  // categories derived from all items
   const categories = useMemo(
-    () => [...new Set(items.map((i) => i.category))],
-    [items],
+    () => [...new Set(allItems.map((i) => i.category))],
+    [allItems],
   );
 
+  // client-side search on top of server-side category filter
   const filtered = useMemo(
     () =>
-      items.filter(
-        (i) =>
-          (category === "all" || i.category === category) &&
-          (i.name.toLowerCase().includes(search.toLowerCase()) ||
-            i.description.toLowerCase().includes(search.toLowerCase())),
-      ),
-    [items, category, search],
+      search.trim()
+        ? baseItems.filter(
+            (i) =>
+              i.name.toLowerCase().includes(search.toLowerCase()) ||
+              i.description.toLowerCase().includes(search.toLowerCase()),
+          )
+        : baseItems,
+    [baseItems, search],
   );
 
   return (
@@ -33,8 +46,8 @@ export const MenuPage = () => {
       <div className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-brand-900 text-white overflow-hidden">
         <div className="hero-gradient absolute inset-0 opacity-10" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16">
-          <p className="text-brand-400 font-semibold text-sm tracking-widest uppercase mb-3">
-            Today's Selection
+          <p className="text-brand-400 font-semibold text-sm tracking-widest mb-3">
+            TODAY'S SELECTION
           </p>
           <h1 className="font-display font-black text-5xl sm:text-6xl mb-3">
             Crafted with <span className="text-brand-400">Passion</span>
@@ -59,9 +72,21 @@ export const MenuPage = () => {
           <CategoryFilter
             categories={categories}
             selected={category}
-            onChange={setCategory}
+            onChange={(cat) => {
+              setCategory(cat);
+              setSearch(""); // clear search when switching category
+            }}
           />
         </div>
+
+        {/* Results count */}
+        {!isLoading && (
+          <p className="text-sm text-stone-400 mb-4">
+            {filtered.length} {filtered.length === 1 ? "dish" : "dishes"} found
+            {category !== "all" && ` in "${category}"`}
+            {search && ` for "${search}"`}
+          </p>
+        )}
 
         {/* Grid */}
         {isLoading ? (

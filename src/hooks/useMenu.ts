@@ -7,6 +7,7 @@ export const MENU_KEYS = {
   all: ["menu", "all"] as const,
   available: ["menu", "available"] as const,
   detail: (id: string) => ["menu", "detail", id] as const,
+  category: (cat: string) => ["menu", "category", cat] as const,
 };
 
 export const useAvailableMenu = () =>
@@ -42,6 +43,14 @@ export const useCreateMenuItem = () => {
     onError: (err: string) => toast.error(err || "Failed to create item"),
   });
 };
+
+export const useMenuByCategory = (category: string) =>
+  useQuery({
+    queryKey: MENU_KEYS.category(category),
+    queryFn: () => menuService.getByCategory(category),
+    enabled: !!category && category !== "all",
+    staleTime: 1000 * 60 * 5,
+  });
 
 export const useUpdateMenuItem = () => {
   const qc = useQueryClient();
