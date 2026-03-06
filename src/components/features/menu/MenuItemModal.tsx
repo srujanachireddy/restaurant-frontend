@@ -115,7 +115,7 @@ export const MenuItemModal = ({ itemId, onClose }: Props) => {
             <div className="p-6">
               {/* Category & Name */}
               <div className="mb-4">
-                <span className="text-xs font-semibold text-brand-500 capitalize tracking-widest uppercase">
+                <span className="text-xs font-semibold text-brand-500 capitalize tracking-widest">
                   {item.category}
                 </span>
                 <h2 className="text-2xl font-black font-display text-stone-800 mt-1">

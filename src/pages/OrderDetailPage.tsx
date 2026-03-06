@@ -132,18 +132,20 @@ export const OrderDetailPage = () => {
           <div className="bg-white rounded-2xl border border-stone-100 p-6 mb-4 shadow-sm">
             <h2 className="font-bold text-stone-800 mb-6">Order Progress</h2>
             <div className="relative">
-              {/* Progress Line */}
-              <div className="absolute top-4 left-4 right-4 h-0.5 bg-stone-100" />
+              <div className="progress-line-bg" />
               <div
-                className="absolute top-4 left-4 h-0.5 bg-brand-500 transition-all duration-500"
-                style={{
-                  width:
-                    stepIndex > 0
-                      ? `${(stepIndex / (STEPS.length - 1)) * 100}%`
-                      : "0%",
-                }}
+                className="progress-line-fill"
+                data-step={stepIndex}
+                style={
+                  stepIndex === 0
+                    ? { width: "0%" }
+                    : stepIndex === 1
+                      ? { width: "33%" }
+                      : stepIndex === 2
+                        ? { width: "66%" }
+                        : { width: "100%" }
+                }
               />
-              {/* Steps */}
               <div className="relative flex justify-between">
                 {STEPS.map((step, i) => {
                   const isCompleted = i < stepIndex;
@@ -155,19 +157,25 @@ export const OrderDetailPage = () => {
                     >
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all
-                        ${
-                          isCompleted
-                            ? "bg-brand-500 text-white"
-                            : isCurrent
-                              ? "bg-brand-500 text-white ring-4 ring-brand-100"
-                              : "bg-stone-100 text-stone-400"
-                        }`}
+                ${
+                  isCompleted
+                    ? "progress-step-done"
+                    : isCurrent
+                      ? "progress-step-current ring-4 ring-brand-100"
+                      : "progress-step-pending"
+                }`}
                       >
                         {isCompleted ? "✓" : STATUS_EMOJI[step]}
                       </div>
                       <span
                         className={`text-xs font-semibold text-center
-                        ${isCurrent ? "text-brand-600" : isCompleted ? "text-stone-600" : "text-stone-400"}`}
+                ${
+                  isCurrent
+                    ? "text-brand-600"
+                    : isCompleted
+                      ? "text-stone-600"
+                      : "text-stone-400"
+                }`}
                       >
                         {step}
                       </span>
