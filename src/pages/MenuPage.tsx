@@ -1,18 +1,21 @@
 import { useState, useMemo } from "react";
-import { MenuCard } from "../components/features/menu/MenuCard";
-import { CategoryFilter } from "../components/features/menu/CategoryFilter";
-import { MenuCardSkeleton } from "../components/ui/Skeleton";
-import { useAvailableMenu } from "../hooks/useMenu";
+import { MenuCard } from "@/components/features/menu/MenuCard";
+import { CategoryFilter } from "@/components/features/menu/CategoryFilter";
+import { MenuItemModal } from "@/components/features/menu/MenuItemModal";
+import { MenuCardSkeleton } from "@/components/ui/Skeleton";
+import { useAvailableMenu } from "@/hooks/useMenu";
 
 export const MenuPage = () => {
   const { data: items = [], isLoading } = useAvailableMenu();
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   const categories = useMemo(
     () => [...new Set(items.map((i) => i.category))],
     [items],
   );
+
   const filtered = useMemo(
     () =>
       items.filter(
@@ -26,8 +29,9 @@ export const MenuPage = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Hero */}
       <div className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-brand-900 text-white overflow-hidden">
-       <div className="absolute inset-0 opacity-10 hero-gradient" />
+        <div className="hero-gradient absolute inset-0 opacity-10" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16">
           <p className="text-brand-400 font-semibold text-sm tracking-widest uppercase mb-3">
             Today's Selection
@@ -48,7 +52,9 @@ export const MenuPage = () => {
           </div>
         </div>
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Category Filter */}
         <div className="mb-8">
           <CategoryFilter
             categories={categories}
@@ -56,6 +62,8 @@ export const MenuPage = () => {
             onChange={setCategory}
           />
         </div>
+
+        {/* Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -65,7 +73,11 @@ export const MenuPage = () => {
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((item) => (
-              <MenuCard key={item.id} item={item} />
+              <MenuCard
+                key={item.id}
+                item={item}
+                onViewDetail={(id) => setSelectedItemId(id)}
+              />
             ))}
           </div>
         ) : (
@@ -78,6 +90,14 @@ export const MenuPage = () => {
           </div>
         )}
       </div>
+
+      {/* Menu Item Detail Modal */}
+      {selectedItemId && (
+        <MenuItemModal
+          itemId={selectedItemId}
+          onClose={() => setSelectedItemId(null)}
+        />
+      )}
     </div>
   );
 };

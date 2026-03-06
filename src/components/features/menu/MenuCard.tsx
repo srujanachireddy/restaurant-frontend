@@ -6,15 +6,20 @@ import { formatCurrency } from "@/utils/format";
 import toast from "react-hot-toast";
 import type { MenuItem } from "@/types";
 
-// helper to check if badge is valid
 const hasValidBadge = (badge: string | null): boolean =>
   !!badge && badge !== "none" && badge.trim() !== "";
 
-export const MenuCard = ({ item }: { item: MenuItem }) => {
+interface Props {
+  item: MenuItem;
+  onViewDetail: (id: string) => void;
+}
+
+export const MenuCard = ({ item, onViewDetail }: Props) => {
   const { isAuthenticated } = useAuthStore();
   const addItem = useCartStore((s) => s.addItem);
 
-  const handleAdd = () => {
+  const handleAdd = (e: React.MouseEvent) => {
+    e.stopPropagation(); // prevent opening modal when clicking Add
     if (!isAuthenticated) {
       toast.error("Please login to add items");
       return;
@@ -24,7 +29,10 @@ export const MenuCard = ({ item }: { item: MenuItem }) => {
   };
 
   return (
-    <article className="bg-white rounded-2xl border border-stone-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+    <article
+      onClick={() => onViewDetail(item.id)}
+      className="bg-white rounded-2xl border border-stone-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer"
+    >
       <div className="relative bg-gradient-to-br from-amber-50 to-brand-50 h-44 flex items-center justify-center overflow-hidden">
         <span className="text-7xl group-hover:scale-110 transition-transform duration-300 select-none">
           {item.emoji}

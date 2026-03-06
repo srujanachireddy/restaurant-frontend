@@ -6,6 +6,7 @@ import type { CreateMenuItemRequest, UpdateMenuItemRequest } from "@/types";
 export const MENU_KEYS = {
   all: ["menu", "all"] as const,
   available: ["menu", "available"] as const,
+  detail: (id: string) => ["menu", "detail", id] as const,
 };
 
 export const useAvailableMenu = () =>
@@ -20,6 +21,14 @@ export const useAllMenu = () =>
     queryKey: MENU_KEYS.all,
     queryFn: menuService.getAll,
     staleTime: 1000 * 60 * 2,
+  });
+
+export const useMenuItem = (id: string) =>
+  useQuery({
+    queryKey: MENU_KEYS.detail(id),
+    queryFn: () => menuService.getById(id),
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
   });
 
 export const useCreateMenuItem = () => {
