@@ -1,15 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { orderService } from "../services/orderService";
-import { useCartStore } from "../store/cartStore";
-import type { CreateOrderRequest, OrderStatus } from "../types";
+import { orderService } from "@/services/orderService";
+import { useCartStore } from "@/store/cartStore";
+import type { CreateOrderRequest, OrderStatus } from "@/types";
 
 export const ORDER_KEYS = {
   mine: ["orders", "mine"] as const,
   all: ["orders", "all"] as const,
 };
 
+// Customer — get my orders
 export const useMyOrders = () =>
   useQuery({
     queryKey: ORDER_KEYS.mine,
@@ -17,6 +18,7 @@ export const useMyOrders = () =>
     staleTime: 1000 * 30,
   });
 
+// Admin — get all orders
 export const useAllOrders = () =>
   useQuery({
     queryKey: ORDER_KEYS.all,
@@ -24,6 +26,7 @@ export const useAllOrders = () =>
     staleTime: 1000 * 30,
   });
 
+// Customer — place order
 export const usePlaceOrder = () => {
   const qc = useQueryClient();
   const { clearCart } = useCartStore();
@@ -33,13 +36,14 @@ export const usePlaceOrder = () => {
     onSuccess: () => {
       clearCart();
       qc.invalidateQueries({ queryKey: ORDER_KEYS.mine });
-      toast.success("Order placed! 🎉");
+      toast.success("Order placed successfully! 🎉");
       navigate("/orders");
     },
     onError: (err: string) => toast.error(err || "Failed to place order"),
   });
 };
 
+// Admin — update order status
 export const useUpdateOrderStatus = () => {
   const qc = useQueryClient();
   return useMutation({
@@ -47,12 +51,13 @@ export const useUpdateOrderStatus = () => {
       orderService.updateStatus(id, status),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ORDER_KEYS.all });
-      toast.success("Status updated!");
+      toast.success("Order status updated!");
     },
-    onError: (err: string) => toast.error(err || "Failed to update"),
+    onError: (err: string) => toast.error(err || "Failed to update status"),
   });
 };
 
+// Customer — cancel order
 export const useCancelOrder = () => {
   const qc = useQueryClient();
   return useMutation({
@@ -61,6 +66,6 @@ export const useCancelOrder = () => {
       qc.invalidateQueries({ queryKey: ORDER_KEYS.mine });
       toast.success("Order cancelled");
     },
-    onError: (err: string) => toast.error(err || "Cannot cancel"),
+    onError: (err: string) => toast.error(err || "Cannot cancel this order"),
   });
 };

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Input } from "../../ui/Input";
-import { Button } from "../../ui/Button";
-import { useCreateMenuItem } from "../../../hooks/useMenu";
-import type { CreateMenuItemRequest } from "../../../types";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { useCreateMenuItem } from "@/hooks/useMenu";
+import type { CreateMenuItemRequest } from "@/types";
 
 const INITIAL: CreateMenuItemRequest = {
   name: "",
@@ -11,25 +11,32 @@ const INITIAL: CreateMenuItemRequest = {
   category: "",
   emoji: "🍽️",
   isVegetarian: false,
-  badge: "",
+  badge: null,
 };
 
 export const MenuItemForm = ({ onClose }: { onClose: () => void }) => {
-  const [form, setForm] = useState(INITIAL);
+  const [form, setForm] = useState<CreateMenuItemRequest>(INITIAL);
   const { mutate: create, isPending } = useCreateMenuItem();
+
   const set = (
     key: keyof CreateMenuItemRequest,
-    value: string | number | boolean,
+    value: string | number | boolean | null,
   ) => setForm((f) => ({ ...f, [key]: value }));
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    create(
+      {
+        ...form,
+        price: Number(form.price),
+        badge: form.badge || null, // send null if empty string
+      },
+      { onSuccess: onClose },
+    );
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        create({ ...form, price: Number(form.price) }, { onSuccess: onClose });
-      }}
-      className="space-y-4"
-    >
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="Name"
@@ -75,8 +82,8 @@ export const MenuItemForm = ({ onClose }: { onClose: () => void }) => {
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="Badge (optional)"
-          value={form.badge}
-          onChange={(e) => set("badge", e.target.value)}
+          value={form.badge || ""}
+          onChange={(e) => set("badge", e.target.value || null)}
           placeholder="New, Popular..."
         />
         <div className="flex items-center gap-3 pt-7">

@@ -1,10 +1,10 @@
-import { useAuthStore } from "../../../store/authStore";
-import { useCartStore } from "../../../store/cartStore";
-import { Button } from "../../ui/Button";
-import { Badge } from "../../ui/Badge";
-import { formatCurrency } from "../../../utils/format";
+import { useAuthStore } from "@/store/authStore";
+import { useCartStore } from "@/store/cartStore";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { formatCurrency } from "@/utils/format";
 import toast from "react-hot-toast";
-import type { MenuItem } from "../../../types";
+import type { MenuItem } from "@/types";
 
 export const MenuCard = ({ item }: { item: MenuItem }) => {
   const { isAuthenticated } = useAuthStore();
@@ -25,6 +25,7 @@ export const MenuCard = ({ item }: { item: MenuItem }) => {
         <span className="text-7xl group-hover:scale-110 transition-transform duration-300 select-none">
           {item.emoji}
         </span>
+        {/* Vegetarian badge */}
         {item.isVegetarian && (
           <div
             className="absolute top-3 left-3 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
@@ -33,7 +34,8 @@ export const MenuCard = ({ item }: { item: MenuItem }) => {
             <span className="text-white text-xs font-bold">V</span>
           </div>
         )}
-        {item.badge && item.badge !== "none" && item.badge !== "" && (
+        {/* Optional badge — only show if not null/empty */}
+        {item.badge && (
           <div className="absolute top-3 right-3">
             <Badge label={item.badge} variant="warning" />
           </div>

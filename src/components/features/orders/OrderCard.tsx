@@ -1,12 +1,8 @@
-import { Badge } from "../../ui/Badge";
-import { Button } from "../../ui/Button";
-import {
-  formatCurrency,
-  formatDate,
-  formatOrderId,
-} from "../../../utils/format";
-import { useCancelOrder } from "../../../hooks/useOrders";
-import type { Order, OrderStatus } from "../../../types";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { formatCurrency, formatDate, formatOrderId } from "@/utils/format";
+import { useCancelOrder } from "@/hooks/useOrders";
+import type { Order, OrderStatus } from "@/types";
 
 const STATUS_VARIANT: Record<
   OrderStatus,
@@ -19,10 +15,20 @@ const STATUS_VARIANT: Record<
   Cancelled: "danger",
 };
 
+const STATUS_EMOJI: Record<OrderStatus, string> = {
+  Pending: "⏳",
+  Confirmed: "✅",
+  Preparing: "👨‍🍳",
+  Delivered: "🎉",
+  Cancelled: "❌",
+};
+
 export const OrderCard = ({ order }: { order: Order }) => {
   const { mutate: cancel, isPending } = useCancelOrder();
+
   return (
     <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden hover:shadow-md transition-shadow">
+      {/* Header */}
       <div className="flex items-start justify-between p-5 border-b border-stone-50">
         <div>
           <p className="font-mono text-sm font-bold text-stone-400">
@@ -36,12 +42,17 @@ export const OrderCard = ({ order }: { order: Order }) => {
           </p>
         </div>
         <div className="text-right">
-          <Badge label={order.status} variant={STATUS_VARIANT[order.status]} />
+          <Badge
+            label={`${STATUS_EMOJI[order.status]} ${order.status}`}
+            variant={STATUS_VARIANT[order.status]}
+          />
           <p className="text-2xl font-black text-stone-800 mt-2">
             {formatCurrency(order.totalPrice)}
           </p>
         </div>
       </div>
+
+      {/* Order Items — uses OrderItemResponseDto fields */}
       <div className="p-5 space-y-2">
         {order.items.map((item, i) => (
           <div key={i} className="flex justify-between text-sm">
@@ -49,11 +60,18 @@ export const OrderCard = ({ order }: { order: Order }) => {
               {item.menuItemName}{" "}
               <span className="text-stone-400">×{item.quantity}</span>
             </span>
-            <span className="font-medium text-stone-800">
-              {formatCurrency(item.subtotal)}
-            </span>
+            <div className="text-right">
+              <span className="font-medium text-stone-800">
+                {formatCurrency(item.subtotal)}
+              </span>
+              <span className="text-stone-400 text-xs ml-2">
+                @ {formatCurrency(item.unitPrice)} each
+              </span>
+            </div>
           </div>
         ))}
+
+        {/* Cancel button — only for Pending orders */}
         {order.status === "Pending" && (
           <div className="pt-3 border-t border-stone-50">
             <Button

@@ -29,7 +29,7 @@ export interface MenuItem {
   category: string;
   emoji: string;
   isVegetarian: boolean;
-  badge: string;
+  badge: string | null;
   isAvailable: boolean;
   createdAt: string;
   updatedAt: string;
@@ -41,7 +41,7 @@ export interface CreateMenuItemRequest {
   category: string;
   emoji: string;
   isVegetarian: boolean;
-  badge: string;
+  badge?: string | null;
 }
 export interface UpdateMenuItemRequest {
   name?: string;
@@ -50,38 +50,52 @@ export interface UpdateMenuItemRequest {
   category?: string;
   emoji?: string;
   isVegetarian?: boolean;
-  badge?: string;
+  badge?: string | null;
   isAvailable?: boolean;
 }
 
-export type OrderStatus = "Pending"
+export type OrderStatus =
+  | "Pending"
   | "Confirmed"
   | "Preparing"
   | "Delivered"
   | "Cancelled";
-export interface OrderItem {
+// matches OrderItemDto — used when creating order
+export interface OrderItemRequest {
+  menuItemId: string; // Guid as string
+  quantity: number;
+}
+
+// matches CreateOrderDto
+export interface CreateOrderRequest {
+  deliveryAddress: string;
+  items: OrderItemRequest[];
+}
+
+// matches OrderItemResponseDto
+export interface OrderItemResponse {
   menuItemId: string;
   menuItemName: string;
   unitPrice: number;
   quantity: number;
   subtotal: number;
 }
+
+// matches OrderResponseDto
 export interface Order {
   id: string;
   userId: string;
   deliveryAddress: string;
   status: OrderStatus;
   totalPrice: number;
-  items: OrderItem[];
+  items: OrderItemResponse[];
   createdAt: string;
   updatedAt: string;
 }
-export interface CreateOrderRequest {
-  deliveryAddress: string;
-  items: {
-    menuItemId: string;
-    quantity: number;
-  }[];
+
+// matches UpdateOrderStatusDto
+export interface UpdateOrderStatusRequest {
+  status: OrderStatus;
 }
 export interface CartItem extends MenuItem {
   quantity: number;
