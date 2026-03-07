@@ -10,24 +10,18 @@ export const MenuPage = () => {
   const [search, setSearch] = useState("");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
-  // always fetch all available items for category list + search
   const { data: allItems = [], isLoading: allLoading } = useAvailableMenu();
-
-  // fetch by category when a category is selected
   const { data: categoryItems = [], isLoading: categoryLoading } =
     useMenuByCategory(category);
 
-  // use server filtered items when category selected, otherwise all items
   const baseItems = category === "all" ? allItems : categoryItems;
   const isLoading = category === "all" ? allLoading : categoryLoading;
 
-  // categories derived from all items
   const categories = useMemo(
     () => [...new Set(allItems.map((i) => i.category))],
     [allItems],
   );
 
-  // client-side search on top of server-side category filter
   const filtered = useMemo(
     () =>
       search.trim()
@@ -41,54 +35,66 @@ export const MenuPage = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-cream-50">
       {/* Hero */}
-      <div className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-brand-900 text-white overflow-hidden">
-        <div className="hero-gradient absolute inset-0 opacity-10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16">
-          <p className="text-brand-400 font-semibold text-sm tracking-widest mb-3">
-            TODAY'S SELECTION
-          </p>
-          <h1 className="font-display font-black text-5xl sm:text-6xl mb-3">
-            Crafted with <span className="text-brand-400">Passion</span>
-          </h1>
-          <p className="text-stone-400 text-lg max-w-lg">
-            Fresh ingredients, bold flavors, perfected over generations.
-          </p>
-          <div className="mt-8 max-w-md">
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search dishes..."
-              className="w-full pl-4 pr-4 py-3.5 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-400 transition-all"
-            />
+      <div className="hero-warm grain relative overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20">
+          <div className="max-w-2xl animate-fade-up">
+            <p className="text-terra-300 font-body font-700 text-sm tracking-widest mb-4">
+              TODAY'S SELECTION
+            </p>
+            <h1 className="font-display font-700 text-6xl sm:text-7xl text-white mb-4 leading-none">
+              Crafted with
+              <br />
+              <span className="text-cream-400 italic">Passion</span>
+            </h1>
+            <p className="text-cream-300 text-lg font-body max-w-lg leading-relaxed">
+              Fresh ingredients, bold flavors, perfected over generations.
+            </p>
+          </div>
+          <div className="mt-10 max-w-lg animate-fade-up-d2">
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-cream-400">
+                🔍
+              </span>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search dishes..."
+                className="w-full pl-10 pr-4 py-4 rounded-2xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-cream-400 focus:outline-none focus:ring-2 focus:ring-terra-400 transition-all font-body text-sm"
+              />
+            </div>
+          </div>
+          {/* Decorative */}
+          <div className="absolute top-10 right-20 w-72 h-72 bg-terra-400/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 right-10 text-8xl opacity-10 select-none">
+            🌿
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         {/* Category Filter */}
-        <div className="mb-8">
+        <div className="mb-6">
           <CategoryFilter
             categories={categories}
             selected={category}
             onChange={(cat) => {
               setCategory(cat);
-              setSearch(""); // clear search when switching category
+              setSearch("");
             }}
           />
         </div>
 
-        {/* Results count */}
+        {/* Results */}
         {!isLoading && (
-          <p className="text-sm text-stone-400 mb-4">
-            {filtered.length} {filtered.length === 1 ? "dish" : "dishes"} found
+          <p className="text-sm text-warm-400 font-body mb-6">
+            {filtered.length} {filtered.length === 1 ? "dish" : "dishes"}
             {category !== "all" && ` in "${category}"`}
-            {search && ` for "${search}"`}
+            {search && ` matching "${search}"`}
           </p>
         )}
 
-        {/* Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -97,26 +103,35 @@ export const MenuPage = () => {
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filtered.map((item) => (
-              <MenuCard
+            {filtered.map((item, i) => (
+              <div
                 key={item.id}
-                item={item}
-                onViewDetail={(id) => setSelectedItemId(id)}
-              />
+                className="animate-fade-up"
+                style={{
+                  animationDelay: `${Math.min(i * 0.05, 0.4)}s`,
+                  animationFillMode: "both",
+                }}
+              >
+                <MenuCard
+                  item={item}
+                  onViewDetail={(id) => setSelectedItemId(id)}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-24">
-            <p className="text-6xl mb-4">🍽️</p>
-            <h3 className="text-xl font-bold text-stone-700 mb-2">
+          <div className="text-center py-24 animate-fade-up">
+            <p className="text-7xl mb-6">🍽️</p>
+            <h3 className="font-display text-2xl font-700 text-charcoal mb-2">
               No dishes found
             </h3>
-            <p className="text-stone-400">Try a different search or category</p>
+            <p className="text-warm-400 font-body">
+              Try a different search or category
+            </p>
           </div>
         )}
       </div>
 
-      {/* Menu Item Detail Modal */}
       {selectedItemId && (
         <MenuItemModal
           itemId={selectedItemId}

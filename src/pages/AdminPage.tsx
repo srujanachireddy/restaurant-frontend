@@ -22,9 +22,9 @@ const STATUSES: OrderStatus[] = [
 ];
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
-  Pending: "bg-yellow-100 text-yellow-700",
+  Pending: "bg-cream-200 text-warm-700",
   Confirmed: "bg-blue-100 text-blue-700",
-  Preparing: "bg-purple-100 text-purple-700",
+  Preparing: "bg-olive-100 text-olive-700",
   Delivered: "bg-green-100 text-green-700",
   Cancelled: "bg-red-100 text-red-700",
 };
@@ -45,13 +45,12 @@ export const AdminPage = () => {
     setEditItem(item);
     setShowForm(true);
   };
-
   const handleCloseForm = () => {
     setShowForm(false);
     setEditItem(null);
   };
 
-  const handleToggleAvailability = (item: MenuItem) => {
+  const handleToggle = (item: MenuItem) => {
     if (item.isAvailable) {
       disableItem(item.id);
     } else {
@@ -60,21 +59,21 @@ export const AdminPage = () => {
   };
 
   const handleDelete = (item: MenuItem) => {
-    if (window.confirm(`Delete "${item.name}"? This cannot be undone.`)) {
-      deleteItem(item.id);
-    }
+    if (window.confirm(`Delete "${item.name}"?`)) deleteItem(item.id);
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 py-8">
+    <div className="min-h-screen bg-cream-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 animate-fade-up">
           <div>
-            <h1 className="text-3xl font-black font-display text-stone-800">
+            <h1 className="font-display text-4xl font-700 text-charcoal">
               Admin Dashboard
             </h1>
-            <p className="text-stone-400 mt-1">Manage your restaurant</p>
+            <p className="text-warm-400 font-body mt-1">
+              Manage your restaurant
+            </p>
           </div>
           {tab === "menu" && (
             <Button
@@ -91,41 +90,59 @@ export const AdminPage = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Total Items", value: menuItems.length, emoji: "🍽️" },
+            {
+              label: "Total Items",
+              value: menuItems.length,
+              emoji: "🍽️",
+              color: "bg-cream-100",
+            },
             {
               label: "Available",
               value: menuItems.filter((i) => i.isAvailable).length,
               emoji: "✅",
+              color: "bg-olive-50",
             },
-            { label: "Total Orders", value: orders.length, emoji: "📋" },
+            {
+              label: "Total Orders",
+              value: orders.length,
+              emoji: "📋",
+              color: "bg-blue-50",
+            },
             {
               label: "Pending",
               value: orders.filter((o) => o.status === "Pending").length,
               emoji: "⏳",
+              color: "bg-terra-50",
             },
-          ].map((stat) => (
+          ].map((stat, i) => (
             <div
               key={stat.label}
-              className="bg-white rounded-2xl p-5 border border-stone-100 shadow-sm"
+              className={`${stat.color} rounded-3xl p-5 border border-cream-200 shadow-warm-sm animate-fade-up`}
+              style={{
+                animationDelay: `${i * 0.1}s`,
+                animationFillMode: "both",
+              }}
             >
-              <p className="text-2xl mb-1">{stat.emoji}</p>
-              <p className="text-2xl font-black text-stone-800">{stat.value}</p>
-              <p className="text-sm text-stone-400">{stat.label}</p>
+              <p className="text-2xl mb-2">{stat.emoji}</p>
+              <p className="font-display text-3xl font-700 text-charcoal">
+                {stat.value}
+              </p>
+              <p className="text-sm text-warm-400 font-body">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 bg-cream-100 p-1.5 rounded-2xl w-fit">
           {(["menu", "orders"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-6 py-2.5 rounded-xl font-semibold capitalize transition-all
+              className={`px-6 py-2.5 rounded-xl font-body font-700 capitalize transition-all duration-200
                 ${
                   tab === t
-                    ? "bg-brand-500 text-white shadow-lg shadow-brand-200"
-                    : "bg-white text-stone-600 border border-stone-200 hover:bg-brand-50"
+                    ? "bg-white text-charcoal shadow-warm-sm"
+                    : "text-warm-500 hover:text-charcoal"
                 }`}
             >
               {t === "menu" ? "🍽️ Menu Items" : "📋 Orders"}
@@ -133,101 +150,96 @@ export const AdminPage = () => {
           ))}
         </div>
 
-        {/* ── Menu Tab ────────────────────────────────────────────────── */}
+        {/* Menu Tab */}
         {tab === "menu" &&
           (menuLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-52" />
+                <Skeleton key={i} className="h-56" />
               ))}
             </div>
           ) : menuItems.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-6xl mb-4">🍽️</p>
-              <h3 className="text-xl font-bold text-stone-700 mb-2">
+              <h3 className="font-display text-2xl font-700 text-charcoal mb-2">
                 No menu items yet
               </h3>
-              <p className="text-stone-400 mb-6">
-                Add your first menu item to get started
-              </p>
-              <Button onClick={() => setShowForm(true)}>
+              <Button onClick={() => setShowForm(true)} className="mt-4">
                 + Add First Item
               </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {menuItems.map((item) => (
+              {menuItems.map((item, i) => (
                 <div
                   key={item.id}
-                  className={`bg-white rounded-2xl p-5 border transition-all
-                    ${item.isAvailable ? "border-stone-100" : "border-red-100 opacity-75"}`}
+                  className={`bg-white rounded-3xl p-5 border shadow-warm-sm transition-all animate-fade-up
+                    ${item.isAvailable ? "border-cream-200" : "border-red-100 opacity-70"}`}
+                  style={{
+                    animationDelay: `${i * 0.05}s`,
+                    animationFillMode: "both",
+                  }}
                 >
-                  {/* Card Header */}
                   <div className="flex items-start justify-between mb-3">
                     <span className="text-4xl">{item.emoji}</span>
-                    <div className="flex items-center gap-2">
-                      {item.badge && (
+                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                      {item.badge && item.badge !== "none" && (
                         <Badge label={item.badge} variant="warning" />
                       )}
                       <Badge
-                        label={item.isAvailable ? "Available" : "Disabled"}
+                        label={
+                          item.isAvailable ? "✅ Available" : "❌ Disabled"
+                        }
                         variant={item.isAvailable ? "success" : "danger"}
                       />
                     </div>
                   </div>
-
-                  {/* Card Info */}
-                  <h3 className="font-bold text-stone-800 mb-0.5">
+                  <h3 className="font-display font-700 text-charcoal text-xl mb-0.5">
                     {item.name}
                   </h3>
-                  <p className="text-sm text-stone-400 capitalize mb-1">
+                  <p className="text-xs text-warm-400 font-body mb-1">
                     {item.category}
                   </p>
-                  <p className="text-sm text-stone-500 line-clamp-2 mb-3">
+                  <p className="text-sm text-warm-500 font-body line-clamp-2 mb-3">
                     {item.description}
                   </p>
                   {item.isVegetarian && (
-                    <span className="inline-flex items-center gap-1 text-xs text-green-600 font-semibold mb-3">
-                      <span className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">
+                    <span className="inline-flex items-center gap-1 text-xs text-olive-600 font-body font-700 mb-3">
+                      <span className="w-4 h-4 bg-olive-500 rounded-full flex items-center justify-center text-white text-xs">
                         V
                       </span>
                       Vegetarian
                     </span>
                   )}
-                  <p className="text-xl font-black text-brand-500 mb-4">
+                  <p className="font-display text-2xl font-700 text-terra-500 mb-4">
                     {formatCurrency(item.price)}
                   </p>
-
-                  {/* Actions */}
                   <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
+                    <button
                       onClick={() => handleEdit(item)}
+                      className="py-2 px-3 text-xs font-body font-700 bg-cream-100 hover:bg-cream-200 text-charcoal rounded-xl transition-colors"
                     >
                       ✏️ Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => handleToggleAvailability(item)}
+                    </button>
+                    <button
+                      onClick={() => handleToggle(item)}
+                      className="py-2 px-3 text-xs font-body font-700 bg-cream-100 hover:bg-cream-200 text-charcoal rounded-xl transition-colors"
                     >
                       {item.isAvailable ? "🚫 Disable" : "✅ Enable"}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="danger"
+                    </button>
+                    <button
                       onClick={() => handleDelete(item)}
+                      className="py-2 px-3 text-xs font-body font-700 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors"
                     >
                       🗑️ Delete
-                    </Button>
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           ))}
 
-        {/* ── Orders Tab ───────────────────────────────────────────────── */}
+        {/* Orders Tab */}
         {tab === "orders" &&
           (ordersLoading ? (
             <div className="space-y-4">
@@ -238,66 +250,68 @@ export const AdminPage = () => {
           ) : orders.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-6xl mb-4">📋</p>
-              <h3 className="text-xl font-bold text-stone-700 mb-2">
+              <h3 className="font-display text-2xl font-700 text-charcoal mb-2">
                 No orders yet
               </h3>
-              <p className="text-stone-400">
-                Orders from customers will appear here
+              <p className="text-warm-400 font-body">
+                Customer orders will appear here
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {orders.map((order) => (
+              {orders.map((order, i) => (
                 <div
                   key={order.id}
-                  className="bg-white rounded-2xl border border-stone-100 p-5 hover:shadow-md transition-shadow"
+                  className="bg-white rounded-3xl border border-cream-200 p-5 shadow-warm-sm hover:shadow-warm-md transition-shadow animate-fade-up"
+                  style={{
+                    animationDelay: `${i * 0.05}s`,
+                    animationFillMode: "both",
+                  }}
                 >
-                  {/* Order Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                     <div>
-                      <p className="font-mono font-bold text-stone-400 text-sm">
+                      <p className="font-mono text-xs text-warm-400">
                         {formatOrderId(order.id)}
                       </p>
-                      <p className="text-sm text-stone-500 mt-0.5">
+                      <p className="text-sm text-warm-500 font-body mt-0.5">
                         {formatDate(order.createdAt)}
                       </p>
-                      <p className="text-sm text-stone-600 mt-1">
+                      <p className="text-sm text-warm-600 font-body mt-1">
                         📍 {order.deliveryAddress}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-semibold ${STATUS_COLORS[order.status]}`}
+                        className={`px-3 py-1 rounded-full text-xs font-body font-700 ${STATUS_COLORS[order.status]}`}
                       >
                         {order.status}
                       </span>
-                      <p className="text-xl font-black text-stone-800">
+                      <p className="font-display text-2xl font-700 text-charcoal">
                         {formatCurrency(order.totalPrice)}
                       </p>
                     </div>
                   </div>
-
-                  {/* Order Items */}
-                  <div className="space-y-1 mb-4 pb-4 border-b border-stone-50">
-                    {order.items.map((item, i) => (
-                      <div key={i} className="flex justify-between text-sm">
-                        <span className="text-stone-600">
+                  <div className="space-y-1 mb-4 pb-4 border-b border-cream-100">
+                    {order.items.map((item, j) => (
+                      <div
+                        key={j}
+                        className="flex justify-between text-sm font-body"
+                      >
+                        <span className="text-warm-600">
                           {item.menuItemName}{" "}
-                          <span className="text-stone-400">
+                          <span className="text-warm-400">
                             ×{item.quantity}
                           </span>
                         </span>
-                        <span className="font-medium text-stone-800">
+                        <span className="font-700 text-charcoal">
                           {formatCurrency(item.subtotal)}
                         </span>
                       </div>
                     ))}
                   </div>
-
-                  {/* Status Actions */}
                   <div>
-                    <p className="text-xs font-semibold text-stone-400 mb-2 uppercase tracking-wide">
-                      Update Status
+                    <p className="text-xs font-body font-700 text-warm-400 mb-2">
+                      UPDATE STATUS
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {STATUSES.map((status) => (
@@ -305,11 +319,11 @@ export const AdminPage = () => {
                           key={status}
                           onClick={() => updateStatus({ id: order.id, status })}
                           disabled={order.status === status}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border
+                          className={`px-3 py-1.5 rounded-xl text-xs font-body font-700 transition-all border
                             ${
                               order.status === status
-                                ? "bg-stone-100 text-stone-400 border-stone-100 cursor-not-allowed"
-                                : "bg-white text-stone-600 border-stone-200 hover:bg-brand-50 hover:text-brand-600 hover:border-brand-200"
+                                ? "bg-cream-100 text-warm-300 border-cream-100 cursor-not-allowed"
+                                : "bg-white text-warm-600 border-cream-200 hover:bg-terra-50 hover:text-terra-600 hover:border-terra-200"
                             }`}
                         >
                           → {status}
@@ -323,7 +337,6 @@ export const AdminPage = () => {
           ))}
       </div>
 
-      {/* Add / Edit Modal */}
       <Modal
         isOpen={showForm}
         onClose={handleCloseForm}

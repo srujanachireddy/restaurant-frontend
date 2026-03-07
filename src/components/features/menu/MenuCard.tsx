@@ -1,6 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
-import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { formatCurrency } from "@/utils/format";
 import toast from "react-hot-toast";
@@ -19,9 +18,9 @@ export const MenuCard = ({ item, onViewDetail }: Props) => {
   const addItem = useCartStore((s) => s.addItem);
 
   const handleAdd = (e: React.MouseEvent) => {
-    e.stopPropagation(); // prevent opening modal when clicking Add
+    e.stopPropagation();
     if (!isAuthenticated) {
-      toast.error("Please login to add items");
+      toast.error("Please sign in to add items");
       return;
     }
     addItem(item);
@@ -31,43 +30,57 @@ export const MenuCard = ({ item, onViewDetail }: Props) => {
   return (
     <article
       onClick={() => onViewDetail(item.id)}
-      className="bg-white rounded-2xl border border-stone-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col cursor-pointer"
+      className="bg-white rounded-3xl border border-cream-200 overflow-hidden card-hover cursor-pointer group flex flex-col shadow-warm-sm"
     >
-      <div className="relative bg-gradient-to-br from-amber-50 to-brand-50 h-44 flex items-center justify-center overflow-hidden">
-        <span className="text-7xl group-hover:scale-110 transition-transform duration-300 select-none">
+      {/* Emoji section */}
+      <div className="relative bg-gradient-to-br from-cream-100 to-cream-200 h-44 flex items-center justify-center overflow-hidden">
+        <span className="text-7xl group-hover:scale-110 transition-transform duration-300 select-none filter drop-shadow-sm">
           {item.emoji}
         </span>
+        {/* Veg indicator */}
         {item.isVegetarian && (
           <div
-            className="absolute top-3 left-3 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+            className="absolute top-3 left-3 w-6 h-6 bg-olive-500 rounded-full flex items-center justify-center shadow-sm"
             title="Vegetarian"
           >
-            <span className="text-white text-xs font-bold">V</span>
+            <span className="text-white text-xs font-body font-700">V</span>
           </div>
         )}
+        {/* Badge */}
         {hasValidBadge(item.badge) && (
           <div className="absolute top-3 right-3">
             <Badge label={item.badge!} variant="warning" />
           </div>
         )}
+        {/* View detail hint */}
+        <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/5 transition-colors duration-300 flex items-center justify-center">
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur text-charcoal text-xs font-body font-700 px-3 py-1.5 rounded-full shadow-warm-sm">
+            View Details
+          </span>
+        </div>
       </div>
+
+      {/* Content */}
       <div className="p-5 flex flex-col flex-1">
-        <span className="text-xs font-semibold text-brand-500 capitalize tracking-wide mb-1">
-          {item.category}
+        <span className="text-xs font-body font-700 text-terra-500 tracking-widest mb-1">
+          {item.category.toUpperCase()}
         </span>
-        <h3 className="font-display font-bold text-stone-800 text-lg mb-1.5 leading-tight">
+        <h3 className="font-display font-700 text-charcoal text-xl mb-1.5 leading-tight">
           {item.name}
         </h3>
-        <p className="text-stone-400 text-sm leading-relaxed flex-1 line-clamp-2">
+        <p className="text-warm-500 text-sm leading-relaxed flex-1 line-clamp-2 font-body">
           {item.description}
         </p>
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-stone-50">
-          <span className="text-2xl font-black text-stone-800">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-cream-100">
+          <span className="font-display text-2xl font-700 text-charcoal">
             {formatCurrency(item.price)}
           </span>
-          <Button size="sm" onClick={handleAdd}>
+          <button
+            onClick={handleAdd}
+            className="px-4 py-2 bg-terra-500 hover:bg-terra-600 text-white text-sm font-body font-700 rounded-xl transition-all duration-200 shadow-terra hover:shadow-lg active:scale-95"
+          >
             + Add
-          </Button>
+          </button>
         </div>
       </div>
     </article>

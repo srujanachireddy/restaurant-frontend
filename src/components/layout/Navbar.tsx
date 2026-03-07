@@ -14,10 +14,10 @@ export const Navbar = () => {
     <Link
       to={to}
       className={cn(
-        "px-3 py-2 rounded-xl text-sm font-medium transition-all",
+        "px-4 py-2 rounded-xl text-sm font-body font-600 transition-all duration-200",
         pathname === to
-          ? "bg-brand-50 text-brand-600"
-          : "text-stone-600 hover:bg-stone-50",
+          ? "bg-terra-50 text-terra-600"
+          : "text-warm-700 hover:bg-cream-100 hover:text-charcoal",
       )}
     >
       {label}
@@ -25,17 +25,17 @@ export const Navbar = () => {
   );
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-b border-stone-100 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-cream-50/90 backdrop-blur-xl border-b border-cream-200 shadow-warm-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link
           to={isAuthenticated && user?.role === "Admin" ? "/admin" : "/menu"}
           className="flex items-center gap-2.5 group"
         >
-          <div className="w-9 h-9 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-200 group-hover:scale-105 transition-transform">
-            <span className="text-white text-lg">🍽️</span>
+          <div className="w-9 h-9 bg-gradient-to-br from-terra-400 to-terra-600 rounded-xl flex items-center justify-center shadow-terra group-hover:scale-105 transition-transform duration-200">
+            <span className="text-lg">🍽️</span>
           </div>
-          <span className="font-display font-black text-xl text-stone-800">
+          <span className="font-display font-700 text-xl text-charcoal tracking-wide">
             Savoria
           </span>
         </Link>
@@ -43,7 +43,6 @@ export const Navbar = () => {
         <nav className="flex items-center gap-1">
           {isAuthenticated ? (
             <>
-              {/* Customer Nav */}
               {user?.role === "Customer" && (
                 <>
                   {navLink("/menu", "Menu")}
@@ -51,15 +50,15 @@ export const Navbar = () => {
                   <Link
                     to="/cart"
                     className={cn(
-                      "relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all",
+                      "relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-body font-600 transition-all duration-200",
                       pathname === "/cart"
-                        ? "bg-brand-50 text-brand-600"
-                        : "text-stone-600 hover:bg-stone-50",
+                        ? "bg-terra-50 text-terra-600"
+                        : "text-warm-700 hover:bg-cream-100 hover:text-charcoal",
                     )}
                   >
                     🛒 Cart
                     {totalItems > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-brand-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                      <span className="absolute -top-1 -right-1 bg-terra-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-body font-700 shadow-terra">
                         {totalItems}
                       </span>
                     )}
@@ -67,22 +66,20 @@ export const Navbar = () => {
                 </>
               )}
 
-              {/* Admin Nav */}
-              {user?.role === "Admin" && <>{navLink("/admin", "Dashboard")}</>}
+              {user?.role === "Admin" && navLink("/admin", "Dashboard")}
 
-              {/* User info + Logout */}
-              <div className="ml-3 pl-3 border-l border-stone-200 flex items-center gap-2">
+              <div className="ml-3 pl-3 border-l border-cream-200 flex items-center gap-2.5">
                 <div className="hidden sm:block text-right">
-                  <p className="text-sm font-semibold text-stone-700">
+                  <p className="text-sm font-body font-700 text-charcoal leading-none">
                     {user?.name}
                   </p>
-                  <p className="text-xs text-stone-400 capitalize">
+                  <p className="text-xs text-warm-500 capitalize mt-0.5">
                     {user?.role}
                   </p>
                 </div>
                 <button
                   onClick={logout}
-                  className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                  className="p-2 rounded-xl text-warm-400 hover:text-terra-500 hover:bg-terra-50 transition-all duration-200"
                   title="Logout"
                 >
                   <svg
@@ -103,13 +100,12 @@ export const Navbar = () => {
             </>
           ) : (
             <>
-              {navLink("/login", "Login")}
-              {/* Only show Sign Up for customers — no admin registration */}
+              {navLink("/login", "Sign In")}
               <Link
                 to="/register"
-                className="ml-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-brand-200"
+                className="ml-2 px-5 py-2 bg-terra-500 hover:bg-terra-600 text-white rounded-2xl text-sm font-body font-700 transition-all duration-200 shadow-terra hover:shadow-lg active:scale-95"
               >
-                Sign Up
+                Get Started
               </Link>
             </>
           )}

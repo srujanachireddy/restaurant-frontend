@@ -1,50 +1,49 @@
-import { forwardRef, type ButtonHTMLAttributes } from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "@/utils/cn";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "olive";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant = "primary",
-      size = "md",
-      loading,
-      disabled,
-      children,
-      ...props
-    },
-    ref,
-  ) => (
+export const Button = ({
+  variant = "primary",
+  size = "md",
+  loading,
+  className,
+  children,
+  disabled,
+  ...props
+}: ButtonProps) => {
+  const base =
+    "inline-flex items-center justify-center font-body font-700 rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95";
+
+  const variants = {
+    primary:
+      "bg-terra-500 hover:bg-terra-600 text-white shadow-terra focus:ring-terra-400",
+    secondary:
+      "bg-cream-100 hover:bg-cream-200 text-charcoal border border-cream-300 focus:ring-cream-300",
+    danger: "bg-red-500 hover:bg-red-600 text-white focus:ring-red-400",
+    ghost:
+      "bg-transparent hover:bg-cream-100 text-charcoal focus:ring-cream-300",
+    olive: "bg-olive-500 hover:bg-olive-600 text-white focus:ring-olive-400",
+  };
+
+  const sizes = {
+    sm: "px-4 py-2 text-sm gap-1.5",
+    md: "px-5 py-2.5 text-sm gap-2",
+    lg: "px-7 py-3.5 text-base gap-2",
+  };
+
+  return (
     <button
-      ref={ref}
+      className={cn(base, variants[variant], sizes[size], className)}
       disabled={disabled || loading}
-      className={cn(
-        "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
-        {
-          "bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-200 focus:ring-brand-400":
-            variant === "primary",
-          "bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 focus:ring-stone-300":
-            variant === "secondary",
-          "text-stone-600 hover:bg-stone-100 focus:ring-stone-200":
-            variant === "ghost",
-          "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-200 focus:ring-red-400":
-            variant === "danger",
-          "px-3 py-1.5 text-sm": size === "sm",
-          "px-4 py-2.5 text-sm": size === "md",
-          "px-6 py-3 text-base": size === "lg",
-        },
-        className,
-      )}
       {...props}
     >
       {loading ? (
         <span className="flex items-center gap-2">
-          <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle
               className="opacity-25"
               cx="12"
@@ -65,6 +64,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         children
       )}
     </button>
-  ),
-);
-Button.displayName = "Button";
+  );
+};
