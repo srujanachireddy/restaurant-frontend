@@ -15,14 +15,16 @@ export const useMyOrders = () =>
   useQuery({
     queryKey: ORDER_KEYS.mine,
     queryFn: orderService.getMyOrders,
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 10,
+    refetchInterval: 15000, // refresh every 15 seconds
   });
 
 export const useAllOrders = () =>
   useQuery({
     queryKey: ORDER_KEYS.all,
     queryFn: orderService.getAll,
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 10,
+    refetchInterval: 15000, // refresh every 15 seconds
   });
 
 export const useOrder = (id: string) =>
@@ -30,7 +32,13 @@ export const useOrder = (id: string) =>
     queryKey: ORDER_KEYS.detail(id),
     queryFn: () => orderService.getById(id),
     enabled: !!id,
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 10,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      // stop polling when order is in a final state
+      if (status === "Delivered" || status === "Cancelled") return false;
+      return 10000; // poll every 10 seconds for active orders
+    },
   });
 
 export const usePlaceOrder = () => {
