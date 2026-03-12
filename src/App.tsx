@@ -31,6 +31,11 @@ const AdminPage = lazy(() =>
 const NotFoundPage = lazy(() =>
   import("@/pages/NotFoundPage").then((m) => ({ default: m.NotFoundPage })),
 );
+const OAuthCallbackPage = lazy(() =>
+  import("@/pages/OAuthCallbackPage").then((m) => ({
+    default: m.OAuthCallbackPage,
+  })),
+);
 
 // ── Page loader ────────────────────────────────────────────────────
 const PageLoader = () => (
@@ -115,6 +120,7 @@ export const App = () => (
             </ProtectedRoute>
           }
         />
+        <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
