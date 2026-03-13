@@ -5,7 +5,7 @@ pipeline {
         VITE_AUTH_API_URL  = credentials('AUTH_API_URL')
         VITE_MENU_API_URL  = credentials('MENU_API_URL')
         VITE_ORDER_API_URL = credentials('ORDER_API_URL')
-        VITE_APP_URL       = credentials('APP_URL')
+        FRONTEND_BASE_URL = credentials('FRONTEND_BASE_URL')
     }
 
     stages {
@@ -49,7 +49,7 @@ pipeline {
                     echo "VITE_AUTH_API_URL=${VITE_AUTH_API_URL}"   > .env
                     echo "VITE_MENU_API_URL=${VITE_MENU_API_URL}"   >> .env
                     echo "VITE_ORDER_API_URL=${VITE_ORDER_API_URL}" >> .env
-                    echo "VITE_APP_URL=${VITE_APP_URL}"             >> .env
+                    echo "FRONTEND_BASE_URL=${FRONTEND_BASE_URL}" >> .env
                     cat .env
                     npm run build
                 '''
