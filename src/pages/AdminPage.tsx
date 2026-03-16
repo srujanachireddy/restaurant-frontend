@@ -14,6 +14,14 @@ import { useAllOrders, useUpdateOrderStatus } from "@/hooks/useOrders";
 import { formatCurrency, formatDate, formatOrderId } from "@/utils/format";
 import type { MenuItem, OrderStatus } from "@/types";
 
+const MENU_API = import.meta.env.VITE_MENU_API_URL;
+
+const resolveImageUrl = (imageUrl: string): string => {
+  if (!imageUrl) return "";
+  if (imageUrl.startsWith("http")) return imageUrl;
+  return `${MENU_API}${imageUrl}`;
+};
+
 const STATUSES: OrderStatus[] = [
   "Confirmed",
   "Preparing",
@@ -45,6 +53,7 @@ export const AdminPage = () => {
     setEditItem(item);
     setShowForm(true);
   };
+
   const handleCloseForm = () => {
     setShowForm(false);
     setEditItem(null);
@@ -160,7 +169,9 @@ export const AdminPage = () => {
             </div>
           ) : menuItems.length === 0 ? (
             <div className="text-center py-24">
-              <p className="text-6xl mb-4">🍽️</p>
+              <div className="w-24 h-24 bg-cream-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-5xl">🍽️</span>
+              </div>
               <h3 className="font-display text-2xl font-700 text-charcoal mb-2">
                 No menu items yet
               </h3>
@@ -173,16 +184,38 @@ export const AdminPage = () => {
               {menuItems.map((item, i) => (
                 <div
                   key={item.id}
-                  className={`bg-white rounded-3xl p-5 border shadow-warm-sm transition-all animate-fade-up
+                  className={`bg-white rounded-3xl overflow-hidden border shadow-warm-sm transition-all animate-fade-up
                     ${item.isAvailable ? "border-cream-200" : "border-red-100 opacity-70"}`}
                   style={{
                     animationDelay: `${i * 0.05}s`,
                     animationFillMode: "both",
                   }}
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="text-4xl">{item.imageUrl}</span>
-                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                  {/* Image */}
+                  <div className="relative h-40 bg-cream-100 overflow-hidden">
+                    {item.imageUrl ? (
+                      <img
+                        src={resolveImageUrl(item.imageUrl)}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                          e.currentTarget.parentElement
+                            ?.querySelector(".fallback")
+                            ?.classList.remove("hidden");
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`fallback absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cream-100 to-cream-200 ${
+                        item.imageUrl ? "hidden" : ""
+                      }`}
+                    >
+                      <span className="text-5xl">🍽️</span>
+                    </div>
+
+                    {/* Badges overlay */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-1 items-end z-10">
                       {item.badge && item.badge !== "none" && (
                         <Badge label={item.badge} variant="warning" />
                       )}
@@ -193,46 +226,52 @@ export const AdminPage = () => {
                         variant={item.isAvailable ? "success" : "danger"}
                       />
                     </div>
+
+                    {/* Veg indicator */}
+                    {item.isVegetarian && (
+                      <div className="absolute top-3 left-3 w-6 h-6 bg-olive-500 rounded-full flex items-center justify-center shadow-sm z-10">
+                        <span className="text-white text-xs font-body font-700">
+                          V
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <h3 className="font-display font-700 text-charcoal text-xl mb-0.5">
-                    {item.name}
-                  </h3>
-                  <p className="text-xs text-warm-400 font-body mb-1">
-                    {item.category}
-                  </p>
-                  <p className="text-sm text-warm-500 font-body line-clamp-2 mb-3">
-                    {item.description}
-                  </p>
-                  {item.isVegetarian && (
-                    <span className="inline-flex items-center gap-1 text-xs text-olive-600 font-body font-700 mb-3">
-                      <span className="w-4 h-4 bg-olive-500 rounded-full flex items-center justify-center text-white text-xs">
-                        V
-                      </span>
-                      Vegetarian
-                    </span>
-                  )}
-                  <p className="font-display text-2xl font-700 text-terra-500 mb-4">
-                    {formatCurrency(item.price)}
-                  </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="py-2 px-3 text-xs font-body font-700 bg-cream-100 hover:bg-cream-200 text-charcoal rounded-xl transition-colors"
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      onClick={() => handleToggle(item)}
-                      className="py-2 px-3 text-xs font-body font-700 bg-cream-100 hover:bg-cream-200 text-charcoal rounded-xl transition-colors"
-                    >
-                      {item.isAvailable ? "🚫 Disable" : "✅ Enable"}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="py-2 px-3 text-xs font-body font-700 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors"
-                    >
-                      🗑️ Delete
-                    </button>
+
+                  {/* Content */}
+                  <div className="p-5">
+                    <h3 className="font-display font-700 text-charcoal text-xl mb-0.5">
+                      {item.name}
+                    </h3>
+                    <p className="text-xs text-warm-400 font-body mb-1">
+                      {item.category}
+                    </p>
+                    <p className="text-sm text-warm-500 font-body line-clamp-2 mb-3">
+                      {item.description}
+                    </p>
+                    <p className="font-display text-2xl font-700 text-terra-500 mb-4">
+                      {formatCurrency(item.price)}
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="py-2 px-3 text-xs font-body font-700 bg-cream-100 hover:bg-cream-200 text-charcoal rounded-xl transition-colors"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleToggle(item)}
+                        className="py-2 px-3 text-xs font-body font-700 bg-cream-100 hover:bg-cream-200 text-charcoal rounded-xl transition-colors"
+                      >
+                        {item.isAvailable ? "🚫 Disable" : "✅ Enable"}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item)}
+                        className="py-2 px-3 text-xs font-body font-700 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -249,7 +288,9 @@ export const AdminPage = () => {
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-24">
-              <p className="text-6xl mb-4">📋</p>
+              <div className="w-24 h-24 bg-cream-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-5xl">📋</span>
+              </div>
               <h3 className="font-display text-2xl font-700 text-charcoal mb-2">
                 No orders yet
               </h3>
@@ -291,6 +332,7 @@ export const AdminPage = () => {
                       </p>
                     </div>
                   </div>
+
                   <div className="space-y-1 mb-4 pb-4 border-b border-cream-100">
                     {order.items.map((item, j) => (
                       <div
@@ -309,6 +351,7 @@ export const AdminPage = () => {
                       </div>
                     ))}
                   </div>
+
                   <div>
                     <p className="text-xs font-body font-700 text-warm-400 mb-2">
                       UPDATE STATUS
