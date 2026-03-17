@@ -276,12 +276,22 @@ export const MenuItemForm = ({ onClose, editItem }: Props) => {
               }}
               placeholder="https://example.com/image.jpg"
             />
+            <p className="text-xs text-warm-400 font-body">
+              Use direct image URLs from public sources like imgur.com or
+              wikimedia.org. Right-click image URLs from most websites may not
+              work due to hotlink protection.
+            </p>
             {imagePreview && (
               <img
                 src={imagePreview}
                 alt="Preview"
                 className="h-32 rounded-lg object-cover w-full"
-                onError={() => setImagePreview(null)}
+                onError={() => {
+                  setImagePreview(null);
+                  setImageError(
+                    "URL is not accessible. Please upload a file instead.",
+                  );
+                }}
               />
             )}
           </div>
