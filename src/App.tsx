@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import { useAuthStore } from "@/store/authStore";
+import logo from "../assets/download.svg";
 
 // ── Lazy load all pages ────────────────────────────────────────────
 const LoginPage = lazy(() =>
@@ -42,7 +43,12 @@ const PageLoader = () => (
   <div className="min-h-screen bg-cream-50 flex items-center justify-center">
     <div className="text-center animate-fade-up">
       <div className="w-16 h-16 bg-gradient-to-br from-terra-400 to-terra-600 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse-soft shadow-terra">
-        <span className="text-2xl">🍽️</span>
+        {/* <span className="text-2xl">🍽️</span> */}
+        <img
+          src={logo}
+          alt="Mithila Logo"
+          className="w-full h-full object-contain"
+        />
       </div>
       <p className="text-warm-400 font-body text-sm">Loading...</p>
     </div>

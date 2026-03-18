@@ -4,6 +4,7 @@ import { CategoryFilter } from "@/components/features/menu/CategoryFilter";
 import { MenuItemModal } from "@/components/features/menu/MenuItemModal";
 import { MenuCardSkeleton } from "@/components/ui/Skeleton";
 import { useAvailableMenu, useMenuByCategory } from "@/hooks/useMenu";
+import logo from "../assets/download.svg";
 
 export const MenuPage = () => {
   const [category, setCategory] = useState("all");
@@ -123,7 +124,11 @@ export const MenuPage = () => {
           // Replace the empty state section
           <div className="text-center py-24 animate-fade-up">
             <div className="w-24 h-24 bg-cream-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-5xl">🍽️</span>
+              <img
+                src={logo}
+                alt="Mithila Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <h3 className="font-display text-2xl font-700 text-charcoal mb-2">
               No dishes found
