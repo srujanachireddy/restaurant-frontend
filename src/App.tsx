@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import { useAuthStore } from "@/store/authStore";
-import logo from "../assets/download.svg";
+import logo from "/download.svg";
 
 // ── Lazy load all pages ────────────────────────────────────────────
 const LoginPage = lazy(() =>
