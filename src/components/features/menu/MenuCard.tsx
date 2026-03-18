@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatCurrency } from "@/utils/format";
 import toast from "react-hot-toast";
 import type { MenuItem } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 const hasValidBadge = (badge: string | null): boolean =>
   !!badge && badge !== "none" && badge.trim() !== "";
@@ -16,6 +17,7 @@ interface Props {
 export const MenuCard = ({ item, onViewDetail }: Props) => {
   const { isAuthenticated } = useAuthStore();
   const addItem = useCartStore((s) => s.addItem);
+  const navigate = useNavigate();
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -24,7 +26,33 @@ export const MenuCard = ({ item, onViewDetail }: Props) => {
       return;
     }
     addItem(item);
-    toast.success(`${item.imageUrl} Added to cart!`, { duration: 1500 });
+    // toast with View Cart button
+    toast.custom(
+      (t) => (
+        <div
+          className={`${
+            t.visible ? "animate-fade-up" : "opacity-0"
+          } flex items-center gap-3 bg-white border border-cream-200 shadow-warm-md rounded-2xl px-4 py-3 max-w-xs`}
+        >
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-body font-700 text-charcoal truncate">
+              {item.name}
+            </p>
+            <p className="text-xs text-warm-400 font-body">Added to cart</p>
+          </div>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              navigate("/cart");
+            }}
+            className="px-3 py-1.5 bg-terra-500 hover:bg-terra-600 text-white text-xs font-body font-700 rounded-xl transition-colors flex-shrink-0"
+          >
+            View Cart
+          </button>
+        </div>
+      ),
+      { duration: 3000 },
+    );
   };
 
   return (
