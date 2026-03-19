@@ -106,7 +106,7 @@ export const RegisterPage = () => {
             />
             <Input
               id="email"
-              label="Email address"
+              label="Email Address"
               type="email"
               required
               placeholder="you@example.com"
