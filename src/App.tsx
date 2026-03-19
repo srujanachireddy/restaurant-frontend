@@ -36,6 +36,9 @@ const OAuthCallbackPage = lazy(() =>
     default: m.OAuthCallbackPage,
   })),
 );
+const ProfilePage = lazy(() =>
+  import("@/pages/ProfilePage").then((m) => ({ default: m.ProfilePage })),
+);
 
 // ── Page loader ────────────────────────────────────────────────────
 const PageLoader = () => (
@@ -124,6 +127,14 @@ export const App = () => (
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
     </Suspense>
   </Layout>
 );

@@ -104,3 +104,31 @@ export interface UpdateOrderStatusRequest {
 export interface CartItem extends MenuItem {
   quantity: number;
 }
+// ── Profile ────────────────────────────────────────────────────
+export interface ProfileResponse {
+  userId: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  role: string;
+  isOAuthUser: boolean;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  phone?: string;
+}
+
+export interface AddressResponse {
+  id: string;
+  label: string;
+  fullAddress: string;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export interface AddressRequest {
+  label: string;
+  fullAddress: string;
+  isDefault: boolean;
+}

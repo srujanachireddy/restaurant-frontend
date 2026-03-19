@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useRegister } from "@/hooks/useAuth";
-import logo from "../assets/download.svg";
+import logo from "@/assets/download.svg";
 
 export const RegisterPage = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
