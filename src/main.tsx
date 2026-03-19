@@ -5,12 +5,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import { App } from "./App";
+import { useThemeStore } from "./store/themeStore";
+import { THEME_VARIABLES } from "@/lib/themes";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, staleTime: 1000 * 60 * 2 },
     mutations: { retry: 0 },
   },
+});
+// Apply theme on app load
+const theme = useThemeStore.getState().theme;
+Object.entries(THEME_VARIABLES[theme]).forEach(([key, value]) => {
+  document.documentElement.style.setProperty(key, value);
 });
 
 createRoot(document.getElementById("root")!).render(
