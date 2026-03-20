@@ -1,26 +1,32 @@
 import { authApi } from "@/lib/axios";
-import type { AuthResponse, LoginRequest, RegisterRequest } from "@/types";
-
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  errorCode: string | null;
-  data: T;
-}
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  SendOtpRequest,
+  SendOtpResponse,
+  VerifyOtpRequest,
+} from "@/types";
 
 export const authService = {
   login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const res = await authApi.post<ApiResponse<AuthResponse>>(
-      "/api/auth/login",
-      data,
-    );
-    return res.data.data; // ← unwrap the nested data
+    const res = await authApi.post("/api/auth/login", data);
+    return res.data.data;
   },
+
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const res = await authApi.post<ApiResponse<AuthResponse>>(
-      "/api/auth/register",
-      data,
-    );
-    return res.data.data; // ← unwrap the nested data
+    const res = await authApi.post("/api/auth/register", data);
+    return res.data.data;
+  },
+
+  // ── OTP ──────────────────────────────────────────────────────
+  sendOtp: async (data: SendOtpRequest): Promise<SendOtpResponse> => {
+    const res = await authApi.post("/api/auth/send-otp", data);
+    return res.data.data;
+  },
+
+  verifyOtp: async (data: VerifyOtpRequest): Promise<AuthResponse> => {
+    const res = await authApi.post("/api/auth/verify-otp", data);
+    return res.data.data;
   },
 };
