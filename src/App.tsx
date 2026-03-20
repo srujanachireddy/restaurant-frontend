@@ -8,9 +8,9 @@ import { useAuthStore } from "@/store/authStore";
 const LoginPage = lazy(() =>
   import("@/pages/LoginPage").then((m) => ({ default: m.LoginPage })),
 );
-const RegisterPage = lazy(() =>
-  import("@/pages/RegisterPage").then((m) => ({ default: m.RegisterPage })),
-);
+// const RegisterPage = lazy(() =>
+//   import("@/pages/RegisterPage").then((m) => ({ default: m.RegisterPage })),
+// );
 const MenuPage = lazy(() =>
   import("@/pages/MenuPage").then((m) => ({ default: m.MenuPage })),
 );
@@ -82,7 +82,7 @@ export const App = () => (
           path="/register"
           element={
             <GuestRoute>
-              <RegisterPage />
+              <LoginPage />
             </GuestRoute>
           }
         />

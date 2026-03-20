@@ -132,3 +132,18 @@ export interface AddressRequest {
   fullAddress: string;
   isDefault: boolean;
 }
+// ── OTP ────────────────────────────────────────────────────────
+export interface SendOtpRequest {
+  email: string;
+}
+
+export interface SendOtpResponse {
+  isNewUser: boolean;
+  message: string;
+}
+
+export interface VerifyOtpRequest {
+  email: string;
+  otp: string;
+  name?: string;
+}
