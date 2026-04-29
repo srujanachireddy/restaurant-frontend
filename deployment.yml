@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restaurant-frontend
+  template:
+    metadata:
+      labels:
+        app: restaurant-frontend
+    spec:
+      containers:
+        - name: restaurant-frontend
+          image: srujanadevopsacr.azurecr.io/restaurant-frontend:v1
+          ports:
+            - containerPort: 80
