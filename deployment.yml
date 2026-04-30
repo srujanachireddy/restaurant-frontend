@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: restaurant-frontend
-          image: srujanadevopsacr.azurecr.io/restaurant-frontend:v1
+          image: srujanatfacr001.azurecr.io/restaurant-frontend:v1
           ports:
             - containerPort: 80
