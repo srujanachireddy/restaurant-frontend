@@ -1,0 +1,64 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageRepository: 'restaurant-frontend'
+  dockerfilePath: 'docker/Dockerfile'
+  buildContext: '.'
+  tag: '$(Build.BuildId)'
+  acrLoginServer: 'srujanatfacr001.azurecr.io'
+  kubernetesNamespace: 'default'
+
+stages:
+  - stage: Build_and_Push
+    displayName: Build and Push Image
+    jobs:
+      - job: Build
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: 'Install Node.js'
+
+          - script: |
+              cd app
+              npm install
+              npm run build
+            displayName: 'Install dependencies and build app'
+
+          - task: Docker@2
+            displayName: 'Build and push Docker image to ACR'
+            inputs:
+              containerRegistry: 'acr-connection'
+              repository: '$(imageRepository)'
+              command: 'buildAndPush'
+              Dockerfile: '$(dockerfilePath)'
+              buildContext: '$(buildContext)'
+              tags: |
+                $(tag)
+
+  - stage: Deploy_to_AKS
+    displayName: Deploy to AKS
+    dependsOn: Build_and_Push
+    jobs:
+      - job: Deploy
+        steps:
+          - script: |
+              sed "s|IMAGE_PLACEHOLDER|$(acrLoginServer)/$(imageRepository):$(tag)|g" k8s/deployment.yaml > k8s/deployment-rendered.yaml
+            displayName: 'Render deployment manifest with image tag'
+
+          - task: KubernetesManifest@1
+            displayName: 'Deploy to AKS'
+            inputs:
+              action: 'deploy'
+              connectionType: 'azureResourceManager'
+              azureSubscriptionConnection: 'azure-rm-connection'
+              azureResourceGroup: 'tf-devops-rg'
+              kubernetesCluster: 'tf-restaurant-aks'
+              namespace: '$(kubernetesNamespace)'
+              manifests: |
+                k8s/deployment-rendered.yaml
+                k8s/service.yaml
