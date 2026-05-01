@@ -32,7 +32,7 @@ stages:
           - task: Docker@2
             displayName: 'Build and push Docker image to ACR'
             inputs:
-              containerRegistry: 'acr-connection'
+              containerRegistry: 'azure-acr-connection'
               repository: '$(imageRepository)'
               command: 'buildAndPush'
               Dockerfile: '$(dockerfilePath)'
