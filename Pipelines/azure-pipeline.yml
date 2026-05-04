@@ -14,23 +14,24 @@ variables:
 
 stages:
   - stage: Build_and_Push
-    displayName: Build and Push Image
+    displayName: Build and Push Docker Image
     jobs:
       - job: Build
+        displayName: Build React App and Push Image
         steps:
           - task: NodeTool@0
+            displayName: Install Node.js
             inputs:
               versionSpec: '18.x'
-            displayName: 'Install Node.js'
 
           - script: |
               cd app
               npm install
               npm run build
-            displayName: 'Install dependencies and build app'
+            displayName: Build React application
 
           - task: Docker@2
-            displayName: 'Build and push Docker image to ACR'
+            displayName: Build and push image to ACR
             inputs:
               containerRegistry: 'azure-acr-connection'
               repository: '$(imageRepository)'
@@ -45,13 +46,14 @@ stages:
     dependsOn: Build_and_Push
     jobs:
       - job: Deploy
+        displayName: Deploy Kubernetes Manifests
         steps:
           - script: |
-              sed "s|IMAGE_PLACEHOLDER|$(acrLoginServer)/$(imageRepository):$(tag)|g" k8s/deployment.yaml > k8s/deployment-rendered.yaml
-            displayName: 'Render deployment manifest with image tag'
+              sed "s|IMAGE_PLACEHOLDER|$(acrLoginServer)/$(imageRepository):$(tag)|g" k8s/deployment.yml > k8s/deployment-rendered.yml
+            displayName: Render Kubernetes deployment manifest
 
           - task: KubernetesManifest@1
-            displayName: 'Deploy to AKS'
+            displayName: Deploy application to AKS
             inputs:
               action: 'deploy'
               connectionType: 'azureResourceManager'
@@ -60,5 +62,5 @@ stages:
               kubernetesCluster: 'tf-restaurant-aks'
               namespace: '$(kubernetesNamespace)'
               manifests: |
-                k8s/deployment-rendered.yaml
-                k8s/service.yaml
+                k8s/deployment-rendered.yml
+                k8s/service.yml
